@@ -2912,7 +2912,7 @@ function Invoke-CleanRam([bool]$silent = $false) {
 # =====================================================================
 #  MEJORAS RAMLIMITER v2.1 : Modo Juego/Foco + Modo mini + Actualizacion automatica
 # =====================================================================
-$AppVersion = '2.2.1'
+$AppVersion = '2.2.2'
 
 # ---------- API extra: ventana a pantalla completa y memoria total ----------
 if (-not ('RamApi3' -as [type])) {
@@ -3327,7 +3327,11 @@ function Test-RemoteScript([string]$text) {
     if (-not $m.Success) { $res.Msg = 'El script remoto no tiene numero de version.'; return $res }
     $tok = $null; $errs = $null
     [void][System.Management.Automation.Language.Parser]::ParseInput($text, [ref]$tok, [ref]$errs)
-    if ($errs -and $errs.Count -gt 0) { $res.Msg = 'El script remoto tiene errores de sintaxis: no se instala.'; return $res }
+    if ($errs -and $errs.Count -gt 0) {
+        $e0 = $errs[0]
+        $res.Msg = 'Errores de sintaxis (linea ' + $e0.Extent.StartLineNumber + '): ' + $e0.Message
+        return $res
+    }
     $res.Ok = $true
     $res.Ver = $m.Groups[1].Value
     return $res
